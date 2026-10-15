@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Network Anomaly Detection System
 
 A machine learning project that analyzes network traffic and classifies records as Normal or Attack using the NSL-KDD dataset.
