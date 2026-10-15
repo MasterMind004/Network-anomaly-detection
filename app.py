@@ -1,3 +1,4 @@
+
 import os
 import html
 import joblib
@@ -26,7 +27,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. THEME AND CUSTOM CSS (STRICT CONTAINER REPAIR)
+# 2. THEME AND CUSTOM CSS — UI OVERLAP FIX
 # ============================================================
 st.markdown("""
 <style>
@@ -47,27 +48,36 @@ st.markdown("""
     --cyan: #32d4df;
 }
 
-html, body, [data-testid="stAppViewContainer"] {
+html,
+body,
+[data-testid="stAppViewContainer"] {
     background: var(--bg);
     color: var(--text);
     font-family: 'Inter', sans-serif;
 }
 
+/*
+Keep Streamlit's hosting toolbar intact.
+Do not pull the application header underneath it.
+*/
 [data-testid="stHeader"] {
-    background: rgba(12,16,21,0.95);
-    height: 0.5rem;
+    background: #0c1015 !important;
+    min-height: 3.5rem;
+    z-index: 1000;
 }
 
 [data-testid="stToolbar"] {
     right: 1rem;
 }
 
+/* Main content starts below the toolbar */
 [data-testid="stMainBlockContainer"] {
     max-width: 1700px;
-    padding-top: 1.3rem;
-    padding-bottom: 2rem;
+    padding-top: 1.5rem !important;
+    padding-bottom: 2rem !important;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
+    box-sizing: border-box;
 }
 
 h1, h2, h3, h4, p, label {
@@ -78,13 +88,14 @@ code, pre, .mono {
     font-family: 'Roboto Mono', monospace !important;
 }
 
-/* ELIMINATE ALL UNNECESSARY OR EMPTY RECTANGLES / BORDERS */
+/* Remove unwanted borders around Streamlit containers */
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
+/* Hide genuinely empty elements only */
 div[data-testid="element-container"]:empty,
 div[data-testid="stVerticalBlock"] > div:empty {
     display: none !important;
@@ -92,28 +103,42 @@ div[data-testid="stVerticalBlock"] > div:empty {
     padding: 0 !important;
 }
 
-/* TOP HEADER */
+/* TOP HEADER — FIXED */
 .app-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 16px;
-    padding: 13px 20px;
-    margin: -1.3rem -2.5rem 1.3rem -2.5rem;
+
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px 20px;
+
+    /* Critical fix: no negative margin */
+    margin: 0 0 1.3rem 0;
+
     background: #171c23;
-    border-bottom: 1px solid #303740;
+    border: 1px solid #303740;
+    border-radius: 12px;
+
+    position: relative;
+    top: auto;
+    z-index: 1;
+    overflow: visible;
 }
 
 .brand-group {
     display: flex;
     align-items: center;
     gap: 13px;
+    min-width: 0;
 }
 
 .brand-icon {
     width: 40px;
     height: 40px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,12 +153,14 @@ div[data-testid="stVerticalBlock"] > div:empty {
     font-size: 16px;
     font-weight: 750;
     color: #f4f7fb;
+    line-height: 1.4;
 }
 
 .brand-subtitle {
     color: #8fa2b8;
     font-size: 12px;
     margin-top: 4px;
+    line-height: 1.5;
 }
 
 .header-status {
@@ -154,7 +181,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
     color: #9eb2ca;
 }
 
-/* SECTION LABELS */
+/* Section labels */
 .section-label {
     color: #8fa6c2;
     font-family: 'Roboto Mono', monospace;
@@ -163,7 +190,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
     margin: 10px 0 15px 0;
 }
 
-/* METRIC CARDS */
+/* Metric cards */
 [data-testid="stMetric"] {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -185,13 +212,14 @@ div[data-testid="stVerticalBlock"] > div:empty {
     font-weight: 750;
 }
 
-/* PANELS */
+/* Panels */
 .panel {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 20px;
     margin-bottom: 16px;
+    box-sizing: border-box;
 }
 
 .panel-title {
@@ -211,7 +239,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
 .red { color: var(--red) !important; }
 .blue { color: var(--blue) !important; }
 
-/* TABS */
+/* Tabs */
 div[data-testid="stTabs"] > div:first-child {
     background: #171c23;
     border-bottom: 1px solid #303740;
@@ -230,7 +258,7 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     font-weight: 650;
 }
 
-/* INPUTS & FORMS */
+/* Inputs and forms */
 [data-testid="stTextInput"] input,
 [data-testid="stNumberInput"] input,
 [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
@@ -247,7 +275,7 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     padding: 20px !important;
 }
 
-/* RESULTS & CARDS */
+/* Prediction result panels */
 .result-panel {
     background: #171c23;
     border: 1px solid #303740;
@@ -279,7 +307,7 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     text-transform: uppercase;
 }
 
-/* MATRIX GRID */
+/* Confusion matrix */
 .matrix-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(80px, 115px));
@@ -307,6 +335,28 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     font-size: 10px;
     margin-top: 5px;
     color: #a1b1c5;
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+    [data-testid="stMainBlockContainer"] {
+        padding-top: 1rem !important;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .app-header {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .header-status {
+        width: 100%;
+    }
+
+    .brand-title {
+        font-size: 14px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
