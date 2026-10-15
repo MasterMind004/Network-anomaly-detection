@@ -27,7 +27,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# 2. THEME AND CUSTOM CSS — UI OVERLAP FIX
+# 2. THEME AND CUSTOM CSS — HEADER VISIBILITY FIX
 # ============================================================
 st.markdown("""
 <style>
@@ -56,30 +56,30 @@ body,
     font-family: 'Inter', sans-serif;
 }
 
-/*
-Keep Streamlit's hosting toolbar intact.
-Do not pull the application header underneath it.
-*/
+/* Keep the hosting toolbar above the application */
 [data-testid="stHeader"] {
     background: #0c1015 !important;
-    min-height: 3.5rem;
-    z-index: 1000;
+    min-height: 3.5rem !important;
+    z-index: 1000 !important;
 }
 
+/* Keep Streamlit's toolbar controls visible */
 [data-testid="stToolbar"] {
     right: 1rem;
 }
 
-/* Main content starts below the toolbar */
+/* MAIN CONTENT — reserve space below toolbar */
 [data-testid="stMainBlockContainer"] {
+    width: 100%;
     max-width: 1700px;
-    padding-top: 1.5rem !important;
+    box-sizing: border-box;
+    padding-top: 2.5rem !important;
     padding-bottom: 2rem !important;
     padding-left: 2.5rem;
     padding-right: 2.5rem;
-    box-sizing: border-box;
 }
 
+/* General typography */
 h1, h2, h3, h4, p, label {
     color: var(--text);
 }
@@ -88,22 +88,23 @@ code, pre, .mono {
     font-family: 'Roboto Mono', monospace !important;
 }
 
-/* Remove unwanted borders around Streamlit containers */
+/* Remove unwanted container borders */
 div[data-testid="stVerticalBlockBorderWrapper"] {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-/* Hide genuinely empty elements only */
-div[data-testid="element-container"]:empty,
-div[data-testid="stVerticalBlock"] > div:empty {
+/* Hide empty elements only */
+div[data-testid="element-container"]:empty {
     display: none !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* TOP HEADER — FIXED */
+/* ============================================================
+   APPLICATION HEADER — NO NEGATIVE MARGIN
+   ============================================================ */
 .app-header {
     display: flex;
     align-items: center;
@@ -112,26 +113,29 @@ div[data-testid="stVerticalBlock"] > div:empty {
     gap: 16px;
 
     width: 100%;
+    min-height: 76px;
+    height: auto;
     box-sizing: border-box;
-    padding: 16px 20px;
 
-    /* Critical fix: no negative margin */
+    /* Never pull the header beneath the toolbar */
+    position: relative;
+    top: 0;
+    z-index: 1;
+
     margin: 0 0 1.3rem 0;
+    padding: 16px 24px;
 
     background: #171c23;
     border: 1px solid #303740;
-    border-radius: 12px;
+    border-radius: 10px;
 
-    position: relative;
-    top: auto;
-    z-index: 1;
     overflow: visible;
 }
 
 .brand-group {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: 14px;
     min-width: 0;
 }
 
@@ -139,12 +143,15 @@ div[data-testid="stVerticalBlock"] > div:empty {
     width: 40px;
     height: 40px;
     flex-shrink: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     background: linear-gradient(135deg, #36c77a, #58a6ff);
     color: #071018;
     border-radius: 9px;
+
     font-weight: 900;
     font-size: 17px;
 }
@@ -153,14 +160,16 @@ div[data-testid="stVerticalBlock"] > div:empty {
     font-size: 16px;
     font-weight: 750;
     color: #f4f7fb;
-    line-height: 1.4;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
 }
 
 .brand-subtitle {
     color: #8fa2b8;
     font-size: 12px;
-    margin-top: 4px;
     line-height: 1.5;
+    margin-top: 4px;
 }
 
 .header-status {
@@ -168,6 +177,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+
     font-family: 'Roboto Mono', monospace;
     font-size: 11px;
     color: var(--green);
@@ -179,6 +189,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
     border-radius: 5px;
     padding: 7px 10px;
     color: #9eb2ca;
+    white-space: nowrap;
 }
 
 /* Section labels */
@@ -212,7 +223,7 @@ div[data-testid="stVerticalBlock"] > div:empty {
     font-weight: 750;
 }
 
-/* Panels */
+/* Dashboard panels */
 .panel {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -235,9 +246,17 @@ div[data-testid="stVerticalBlock"] > div:empty {
     margin-bottom: 16px;
 }
 
-.green { color: var(--green) !important; }
-.red { color: var(--red) !important; }
-.blue { color: var(--blue) !important; }
+.green {
+    color: var(--green) !important;
+}
+
+.red {
+    color: var(--red) !important;
+}
+
+.blue {
+    color: var(--blue) !important;
+}
 
 /* Tabs */
 div[data-testid="stTabs"] > div:first-child {
@@ -275,7 +294,7 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     padding: 20px !important;
 }
 
-/* Prediction result panels */
+/* Prediction results */
 .result-panel {
     background: #171c23;
     border: 1px solid #303740;
@@ -337,10 +356,10 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
     color: #a1b1c5;
 }
 
-/* Responsive spacing */
+/* Responsive layout */
 @media (max-width: 768px) {
     [data-testid="stMainBlockContainer"] {
-        padding-top: 1rem !important;
+        padding-top: 1.5rem !important;
         padding-left: 1rem;
         padding-right: 1rem;
     }
@@ -350,12 +369,16 @@ div[data-testid="stTabs"] button[aria-selected="true"] {
         gap: 12px;
     }
 
+    .brand-title {
+        font-size: 14px;
+    }
+
     .header-status {
         width: 100%;
     }
 
-    .brand-title {
-        font-size: 14px;
+    .header-chip {
+        white-space: normal;
     }
 }
 </style>
@@ -392,6 +415,7 @@ MODEL_COLORS = {
 # ============================================================
 # 4. LOAD SAVED FILES & HELPER FUNCTIONS
 # ============================================================
+
 @st.cache_data
 def load_dataset(path):
     if not os.path.exists(path):
