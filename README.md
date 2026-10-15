@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Network Anomaly Detection System
 
@@ -120,3 +121,7 @@ The reported metrics describe performance on this benchmark dataset. They should
 ## Author
 
 Computer Science and Engineering student project focused on machine learning and network anomaly detection.
+=======
+# Network-anomaly-detection
+An interactive network intrusion detection dashboard built with Python and Streamlit, using Random Forest, Isolation Forest, One-Class SVM, and Autoencoder models. Features include model evaluation, traffic analysis, feature importance, live prediction, and anomaly logging using the NSL-KDD dataset.
+>>>>>>> origin/main
