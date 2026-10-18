@@ -2,9 +2,9 @@
 name: Streamlit App Check
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "17 */6 * * *"
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,10 +17,15 @@ jobs:
     steps:
       - name: Check Streamlit app
         run: |
-          set -eu
-          curl -sS -L --max-redirs 10 \
+          echo "Checking Streamlit app..."
+          curl -sS \
+            --max-redirs 0 \
             --connect-timeout 15 \
             --max-time 45 \
-            -o /dev/null \
-            -w "Final HTTP status: %{http_code}\n" \
-            https://network-anomaly-detection-rauneet.streamlit.app/
+            -o /tmp/response.html \
+            -w "\nHTTP status: %{http_code}\nRedirect URL: %{redirect_url}\n" \
+            https://network-anomaly-detection-rauneet.streamlit.app/ \
+            || true
+          echo "Response preview:"
+          head -c 500 /tmp/response.html || true
+          echo
