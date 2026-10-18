@@ -1,5 +1,5 @@
 
-name: Streamlit App Keep Awake
+name: Streamlit App Check
 
 on:
   schedule:
@@ -12,26 +12,14 @@ permissions:
 jobs:
   check-app:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
 
     steps:
       - name: Check Streamlit app
         run: |
-          python - <<'PY'
-          import urllib.request
-          import urllib.error
-
-          url = "https://network-anomaly-detection-rauneet.streamlit.app/"
-
-          try:
-              request = urllib.request.Request(
-                  url,
-                  headers={"User-Agent": "GitHub-Actions-App-Check"}
-              )
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  print("HTTP status:", response.status)
-                  print("App URL responded successfully.")
-          except Exception as error:
-              print("App check failed:", error)
-              raise
-          PY
+          curl -sS -L --max-redirs 10 \
+            --connect-timeout 15 \
+            --max-time 45 \
+            -o /dev/null \
+            -w "Final HTTP status: %{http_code}\n" \
+            https://network-anomaly-detection-rauneet.streamlit.app/
