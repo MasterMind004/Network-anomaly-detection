@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Check Streamlit app
         run: |
+          set -eu
           curl -sS -L --max-redirs 10 \
             --connect-timeout 15 \
             --max-time 45 \
